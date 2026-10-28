@@ -1,0 +1,18 @@
+# Verified against xenia-project/xenia xboxkrnl_table.inc and xam_table.inc.
+xboxkrnl.exe 0x00d ExCreateThread
+xboxkrnl.exe 0x019 ExTerminateThread
+xboxkrnl.exe 0x029 HalSendSMCMessage
+xboxkrnl.exe 0x05a KeDelayExecutionThread
+xboxkrnl.exe 0x082 KeQueryInterruptTime
+xboxkrnl.exe 0x0b1 KfAcquireSpinLock
+xboxkrnl.exe 0x0b4 KfReleaseSpinLock
+xboxkrnl.exe 0x0c4 MmQueryAddressProtect
+xboxkrnl.exe 0x0c7 MmSetAddressProtect
+xboxkrnl.exe 0x0cf NtClose
+xboxkrnl.exe 0x0d2 NtCreateFile
+xboxkrnl.exe 0x0f0 NtReadFile
+xboxkrnl.exe 0x0ff NtWriteFile
+xboxkrnl.exe 0x158 XboxKrnlVersion variable
+xboxkrnl.exe 0x195 XexGetModuleHandle
+xboxkrnl.exe 0x197 XexGetProcedureAddress
+xam.xex 0x1cf XamGetCurrentTitleId

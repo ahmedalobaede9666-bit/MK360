@@ -12,5 +12,5 @@
   consulted for boot HID handling and known USB lifecycle limitations.
   GPL-3.0, https://github.com/HB-Agadir/x360remap.
 
-MK360's source and hardware backend are distributed under GPL-3.0-or-later.
+MK360's source and hardware backend are distributed under GPL-3.0-only.
 No Microsoft headers, import libraries, XDK binaries or xbdm binaries are included.

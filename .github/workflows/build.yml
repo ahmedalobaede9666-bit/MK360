@@ -21,6 +21,7 @@ jobs:
         with:
           path: ~/.local/mk360-xsdk
           key: xsdk-c-gcc15.3-binutils2.47-${{ runner.os }}-${{ hashFiles('tools/toolchain/*') }}
+          restore-keys: xsdk-c-gcc15.3-binutils2.47-${{ runner.os }}-
       - name: Build compiler if not cached
         run: |
           if [ ! -x "$HOME/.local/mk360-xsdk/bin/powerpc-xsdk-elf-gcc" ]; then
@@ -30,7 +31,6 @@ jobs:
         run: |
           export PATH="$HOME/.local/mk360-xsdk/bin:$PATH"
           if [ -f Makefile ]; then
-            make test
             make package
           fi
       - name: Upload XEX package

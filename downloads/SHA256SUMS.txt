@@ -1,0 +1,3 @@
+d88bbb36af06231cacd3b8c6bd27a080e8f091fccdb9b38bb2663d204618678e  BUILDINFO.json
+a90629d48a2f35cda1fc48bd9c3e39b7fc75dc3ede361abd32d5fb5f9f8fd4e6  MK360-0.1.0-experimental.zip
+417544c338a661e25546a73dcccffa33dd1663ae3aab274a2cdbd318dd3e0e5b  MK360.xex

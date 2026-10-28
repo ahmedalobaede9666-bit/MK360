@@ -1,0 +1,21 @@
+{
+  "project": "MK360",
+  "version": "0.1.0-experimental",
+  "source": "https://github.com/ahmedalobaede9666-bit/MK360",
+  "source_revision": "working-tree",
+  "compiler": "powerpc-xsdk-elf-gcc (GCC) 15.3.0",
+  "xdk_required": false,
+  "hardware_tested": false,
+  "kernel": 17559,
+  "native_validation": "PASS: 59738 checks (mapping, reports, timing, configuration and deterministic fuzz)",
+  "xex_validation": {
+    "format": "XEX2 system DLL",
+    "image_base": "0x81F00000",
+    "entry": "0x81F11D68",
+    "image_bytes": 196608,
+    "file_bytes": 36864,
+    "import_records": 33,
+    "hardware_tested": false
+  },
+  "xex_sha256": "417544c338a661e25546a73dcccffa33dd1663ae3aab274a2cdbd318dd3e0e5b"
+}

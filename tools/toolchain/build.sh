@@ -32,7 +32,7 @@ unpack() {
         fi
         return
     fi
-    tar -xf "$WORK/src/$name.tar.xz" -C "$WORK/src"
+    tar --no-same-owner -xf "$WORK/src/$name.tar.xz" -C "$WORK/src"
     patch -d "$WORK/src/$name" -p1 < "$HERE/$patch_name"
     echo "$want" > "$WORK/src/$name/.mk360-patch"
 }

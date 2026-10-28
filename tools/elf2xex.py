@@ -38,6 +38,7 @@ HEADER_SYSTEM_FLAGS = 0x00030000
 HEADER_EXECUTION_INFO = 0x00040006
 
 MODULE_TITLE = 0x00000001
+MODULE_DLL = 0x00000008
 SYSTEM_NO_FORCED_REBOOT = 0x00000001
 SYSTEM_HANDLE_GAMEPAD_DISCONNECT = 0x00000020
 REGION_ALL = 0xFFFFFFFF
@@ -250,12 +251,12 @@ def align_bytes(data, alignment):
     return data + bytes(align(len(data), alignment) - len(data))
 
 
-def pe_headers(image, runs, entry, stack_bytes):
+def pe_headers(image, runs, entry, stack_bytes, dll=False):
     sections = [run for run in runs if run["start"] is not None]
     code = [run for run in sections if run["type"] == SECTION_CODE]
     data = [run for run in sections if run["type"] != SECTION_CODE]
     file_header = struct.pack("<HHIIIHH", PE_MACHINE_POWERPCBE, len(sections), 0, 0, 0, PE_OPTIONAL_HEADER_BYTES,
-        PE_EXECUTABLE_IMAGE | PE_RELOCS_STRIPPED | PE_32BIT_MACHINE)
+        PE_EXECUTABLE_IMAGE | PE_RELOCS_STRIPPED | PE_32BIT_MACHINE | (0x2000 if dll else 0))
     optional = struct.pack("<HBBIIIIIII", PE_OPTIONAL_MAGIC, 0, 0,
         sum(run["initialized"] for run in code),
         sum(run["initialized"] for run in data),
@@ -409,7 +410,8 @@ def build_xex(image, runs, entry, libraries, resources, args):
     struct.pack_into(">III", security, 0x178, REGION_ALL, MEDIA_ALL, len(descriptors) // PAGE_DESCRIPTOR_BYTES)
 
     header = bytearray(header_size)
-    struct.pack_into(">4sIIIII", header, 0, b"XEX2", MODULE_TITLE, header_size, 0, security_offset, header_count)
+    struct.pack_into(">4sIIIII", header, 0, b"XEX2", MODULE_DLL if args.dll else MODULE_TITLE,
+        header_size, 0, security_offset, header_count)
     header[0x18:0x18 + len(table)] = table
     header[security_offset:security_offset + SECURITY_INFO_BYTES] = security
     header[security_offset + SECURITY_INFO_BYTES:security_offset + security_bytes] = descriptors
@@ -433,20 +435,26 @@ def patch_import_records(image, libraries):
 
 
 def main():
+    global IMAGE_BASE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("elf", type=Path)
     parser.add_argument("xex", type=Path)
     parser.add_argument("--title-id", type=lambda text: int(text, 16), default=0x5853444B)
     parser.add_argument("--stack-size", type=lambda text: int(text, 0), default=1024 * 1024)
     parser.add_argument("--title-name", help="the name the dashboard shows")
+    parser.add_argument("--image-base", type=lambda text: int(text, 0), default=IMAGE_BASE)
+    parser.add_argument("--dll", action="store_true", help="system DLL with a DllMain entry point")
     parser.add_argument("--version", type=parse_version, default=0, help="the title's version, as 1.2.300.4")
     args = parser.parse_args()
+    IMAGE_BASE = args.image_base
+    if IMAGE_BASE % PAGE_BYTES:
+        parser.error("image base must be aligned to 64 KB")
 
     entry, sections = read_elf(args.elf.read_bytes())
     image, runs = build_image(sections)
     libraries = read_imports(sections, image)
     patch_import_records(image, libraries)
-    headers_end = pe_headers(image, runs, entry, args.stack_size)
+    headers_end = pe_headers(image, runs, entry, args.stack_size, args.dll)
     resources = add_title_name(image, headers_end, args.title_id, args.title_name) if args.title_name else b""
     args.xex.write_bytes(build_xex(image, runs, entry, libraries, resources, args))
 
